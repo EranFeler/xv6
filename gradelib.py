@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import shlex
 import sys, os, re, time, socket, select, subprocess, errno, shutil, random, string
 from subprocess import check_call, Popen
 from optparse import OptionParser
@@ -222,7 +223,8 @@ def make(*target):
     post_make()
 
 def show_command(cmd):
-    from pipes import quote
+    import shlex
+    quote = shlex.quote
     print("\n$", " ".join(map(quote, cmd)))
 
 def maybe_unlink(*paths):
