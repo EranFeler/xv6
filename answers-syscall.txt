@@ -1,0 +1,38 @@
+Q1: Looking at the backtrace output, which function called syscall?
+
+the function that called syscall is usertrap() in kernel/trap.c.
+
+Q2: What is the value of p->trapframe->a7 and what does that value represent?
+
+we can check initcode.S to see that a7 is initiallized as "SYS_exec", looking at syscall.h we can see that:
+#define SYS_exec    7
+therefore the value of p->trapframe->a7 is 7, which represents the system call number for the exec system call.
+
+Q3:What was the previous mode that the CPU was in?
+
+We can check the SPP bit when doing p/x $sstatus & (1 << 8), since the returned value was 0x0, that means the previous mode was use mode.
+
+Q4: Write down the assembly instruction the kernel is panicing at. Which register corresponds to the varialable num?
+
+hart 1 starting
+hart 2 starting
+scause 0x000000000000000d
+sepc=0x0000000080002082 stval=0x0000000000000000
+panic: kerneltrap
+
+as we can see, the sepc is at the address 0x80002082, (the other zeros are because of the 64-bit architecture)
+we'll go to kernel.asm and look that address up, and as we can see:
+  // num = p->trapframe->a7;
+  num = * (int *) 0;
+    80002082:	00002683          	lw	a3,0(zero) # 0 <_entry-0x80000000>
+therefore, the assemly instruction that the kernel is panicing at is "lw a3,0(zero)", and the register that corresponds to the variable num is a3.
+
+Q5: Why does the kernel crash?
+
+the kernel crashes because its trying to access the memory address 0, which is invalid.
+
+Q6: What is the name of the binary that was running when the kernel paniced? What is its process id (pid)?
+
+after running p p->name, we can see that the name of the binary is "initcode", which makes sense considering we messed
+with the code that initializes system calls, we can also run p p->pid to see that its 1, which makes
+sense considering its the first process.
