@@ -73,7 +73,11 @@
 #ifdef LAB_PGTBL
 #define USYSCALL (TRAPFRAME - PGSIZE)
 
+#ifndef __ASSEMBLER__
+
 struct usyscall {
   int pid;  // Process ID
 };
+#endif
+
 #endif

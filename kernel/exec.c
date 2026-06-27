@@ -11,11 +11,12 @@ static int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
 int flags2perm(int flags)
 {
-    int perm = 0;
+    int perm = PTE_U;
     if(flags & 0x1)
-      perm = PTE_X;
+        perm |= PTE_X;
     if(flags & 0x2)
-      perm |= PTE_W;
+        perm |= PTE_W;
+    perm |= PTE_R;
     return perm;
 }
 
@@ -127,7 +128,7 @@ exec(char *path, char **argv)
   p->trapframe->epc = elf.entry;  // initial program counter = main
   p->trapframe->sp = sp; // initial stack pointer
   proc_freepagetable(oldpagetable, oldsz);
-
+  vmprint(p->pagetable);
   return argc; // this ends up in a0, the first argument to main(argc, argv)
 
  bad:

@@ -1,0 +1,4 @@
+Q1: Which other xv6 system call(s) could be made faster using this shared page? Explain how.
+
+another syscall that could be made faster using the shared page is "uptime", ticks is global kernel state and we could save them in a shared page to make it faster.
+
