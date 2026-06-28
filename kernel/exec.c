@@ -9,15 +9,17 @@
 
 static int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
-int flags2perm(int flags)
+int
+flags2perm(int flags)
 {
-    int perm = PTE_U;
-    if(flags & 0x1)
-        perm |= PTE_X;
-    if(flags & 0x2)
-        perm |= PTE_W;
+  int perm = PTE_U;
+  if(flags & 0x1)
+    perm |= PTE_X;
+  if(flags & 0x2)
+    perm |= PTE_W;
+  if((flags & 0x1) == 0)
     perm |= PTE_R;
-    return perm;
+  return perm;
 }
 
 int

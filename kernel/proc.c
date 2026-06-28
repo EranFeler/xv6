@@ -169,6 +169,9 @@ freeproc(struct proc *p)
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
   p->pagetable = 0;
+  if(p->usyscall)
+    kfree((void*)p->usyscall);
+p->usyscall = 0;
   p->usyscall = 0;
   p->sz = 0;
   p->pid = 0;

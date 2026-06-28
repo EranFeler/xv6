@@ -69,35 +69,36 @@ sys_sleep(void)
   return 0;
 }
 
-
-#ifdef LAB_PGTBL
 uint64
 sys_pgaccess(void)
 {
-    uint64 startva;
-    int npages;
-    uint64 useraddr;
-    argaddr(0, &startva);
-    argint(1, &npages);
-    argaddr(2, &useraddr);
-    if(npages < 0 || npages > 64)
-        return -1;
-    struct proc *p = myproc();
-    uint64 mask = 0;
-    for(int i = 0; i < npages; i++){
-        uint64 va = startva + i * PGSIZE;
-        pte_t *pte = walk(p->pagetable, va, 0);
-        if(pte == 0)
-            continue;
-        if((*pte & PTE_V) && (*pte & PTE_U) && (*pte & PTE_A)){
-            mask |= (1L << i);
-            *pte &= ~PTE_A;
-        }
+  uint64 startva;
+  int npages;
+  uint64 useraddr;
+  argaddr(0, &startva);
+  argint(1, &npages);
+  argaddr(2, &useraddr);
+  if(npages < 0 || npages > 64)
+    return -1;
+  struct proc *p = myproc();
+  uint64 mask = 0;
+  for(int i = 0; i < npages; i++){
+    uint64 va = startva + i * PGSIZE;
+    pte_t *pte = walk(p->pagetable, va, 0);
+    if(pte == 0)
+      continue;
+    if((*pte & PTE_V) && (*pte & PTE_U)){
+      if(*pte & PTE_A){
+        mask |= (1L << i);
+        *pte &= ~PTE_A;
+      }
     }
-    copyout(p->pagetable, useraddr, (char*)&mask, sizeof(mask));
-    return 0;
+  }
+  if(copyout(p->pagetable, useraddr, (char*)&mask, sizeof(mask)) < 0)
+    return -1;
+
+  return 0;
 }
-#endif
 
 uint64
 sys_kill(void)
