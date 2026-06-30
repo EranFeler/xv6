@@ -66,22 +66,16 @@ usertrap(void)
 
     syscall();
   } else if((which_dev = devintr()) != 0){
-    // ok
-
     if(which_dev == 2) {
       if(p->alarm_interval > 0){
         p->alarm_ticks++;
-
         if(p->alarm_ticks >= p->alarm_interval
            && p->is_alarm_active == 0){
-
           p->is_alarm_active = 1;
           p->alarm_ticks = 0;
-
           memmove(p->alarm_trapframe,
                   p->trapframe,
                   sizeof(struct trapframe));
-
           p->trapframe->epc = p->alarm_handler;
         }
       }
