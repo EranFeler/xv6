@@ -1,0 +1,36 @@
+Q1: Which registers contain arguments to functions? For example, which register holds 13 in main's call to printf?
+
+In RISC-V, the arguments are a1, a2, a3, ...
+specifically in the printf in main, the 13 is the 3rd argument, hence it is stored in a2.
+
+Q2: Where is the call to function f in the assembly code for main? Where is the call to g?
+
+Neither are called, the compiler removed them and instead just instantly changes f(x) into x+3,
+so instead of f(8)+1 the compiler instantly writes 12, same thing inside f, since instead of calling g,
+it just executes x+3 directly.
+
+Q3: At what address is the function printf located?
+
+printf starts at address 0x658, we can scroll down in the file and see:
+0000000000000658 <printf>:
+and when looking at main we can clearly see that the same address is being called:
+3c:	620080e7          	jalr	1568(ra) # 658 <printf>
+
+Q4: What value is in the register ra just after the jalr to printf in main?
+
+ra saves the address of the next instruction to be executed once were done with out function call,
+therefore the value in ra is 0x40, since its the next instruction to be executed:
+  3c:	620080e7          	jalr	1568(ra) # 658 <printf>
+  exit(0);
+  40:	4501                	li	a0,0
+
+Q5: What is the output? If the RISC-V were instead big-endian what would you set i to in order to yield the same output? Would you need to change 57616 to a different value?
+
+The output is: "He110 World", if we were using big-endians, then we would have to set i = 0x726c6400,
+theres no need to change the other constant because we take its value and change it to HEX, 
+endians do not affect actual value.
+
+Q6: In the following code, what is going to be printed after 'y='? (note: the answer is not a specific value.) Why does this happen?
+
+it will print: "x=3 y=<some value>", thats because printf doesnt check for arguments validity, and since we only gave it 1 argument,
+it will just read whatever is next on the stack.
