@@ -1,0 +1,17 @@
+Q1: Why are there missing keys with 2 threads, but not with 1 thread? Identify a sequence of events with 2 threads that can lead to a key being missing.
+
+There are missing keys with 2 thread but not with 1 thread because when using 2 threads, inserting this way without a lock
+can cause issues, lets say one thread wants to add a, and the other wants to add b.
+neither are present, so thread1 takes the head pointer, and so does thread2,
+thread 1 does:
+  e->next = n;
+  *p = e;
+
+so now new_head = a
+*p -> new_head -> old_head
+
+but thread2 read the head pointer before thread1 altered it, so now it does the same thing and it results in
+new_head = b
+*p -> new_head -> old_head
+
+and now a is missing.
